@@ -14,8 +14,9 @@ chmod u+x ./Anaconda2-4.3.1-MacOSX-x86_64.sh
 source ~/.bash_profile
 
 # Install an additonal module not shipped with Anaconda
-conda install -c glemaitre imbalanced-learn
+# conda install -c glemaitre imbalanced-learn
 conda install -c conda-forge tensorflow
+conda install -c anaconda hdf5=1.8.17
 pip install git+git://github.com/Theano/Theano.git
 pip install git+git://github.com/fchollet/keras.git
 
