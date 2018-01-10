@@ -1,5 +1,5 @@
 
-1. install anaconda
+1. install anaconda for python 3.6
   1a. download: (e.g. google "anaconda download"); 
   1b. install: as local user, which does not require administrator permissions  (unless it fails then install as Administrator)
 
@@ -15,7 +15,7 @@
   4a. Open the Anaconda Command Prompt
 
 5. Create conda enviroment
-> conda create -n DL_Tutorial python=2.7 anaconda
+> conda create -n DL_Tutorial python=3.6 anaconda
 > activate DL_Tutorial
 > conda install -c glemaitre imbalanced-learn
 > conda install -c conda-forge tensorflow
