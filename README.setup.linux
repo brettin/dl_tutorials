@@ -17,7 +17,8 @@ source ~/.bash_profile
 # export PATH=/$HOME/anaconda3/bin:$PATH
 
 # Install an additonal module not shipped with Anaconda
-conda install -c conda-forge tensorflow
+conda install tensorflow
+conda install hdf5
 pip install git+git://github.com/Theano/Theano.git
 pip install git+git://github.com/fchollet/keras.git
 
