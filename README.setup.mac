@@ -14,15 +14,12 @@ chmod u+x ./Anaconda3-5.0.1-MacOSX-x86_64.sh
 source ~/.bash_profile
 
 # Install additonal modules not shipped with Anaconda
-conda install -c conda-forge tensorflow
-conda install -c anaconda hdf5=1.8.17
+conda install tensorflow
+conda install hdf5
 pip install git+git://github.com/Theano/Theano.git
 pip install git+git://github.com/fchollet/keras.git
 
 # Download the source files for the tutorial
-git clone https://github.com/ECP-Candle/benchmarks
+git clone https://github.com/brettin/dl_tutorials
 
-# Run the first candle benchmark
-pushd dl_tutorials/Topics/1_keras_overview
-python simple_2d_nn_classier.ipynb
-popd
+# Run the first tutorial example 
