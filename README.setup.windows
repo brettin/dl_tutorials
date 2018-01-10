@@ -1,0 +1,24 @@
+
+1. install anaconda
+  1a. download: (e.g. google "anaconda download"); 
+  1b. install: as local user, which does not require administrator permissions  (unless it fails then install as Administrator)
+
+2. download scripts for class
+  2a. Use Chrome, go to the github link: https://github.com/brettin/dl_tutorials
+  2b. Click on the green 'clone or download' button and choose 'download ZIP'. This will save 'dl_tutorials-master.zip' to where ever you save to.
+
+3. unzip dl_tutorials-master.zip
+  3a. Copy the zip into 'C:\Users\Public\Documents\Yourname'. (MS windows can be picky about permission; I like using the public directory.)
+  3b. unzip with your favorite app (7zip)
+
+4. Anaconda Command Prompt
+  4a. Open the Anaconda Command Prompt
+
+5. Create conda enviroment
+> conda create -n DL_Tutorial python=2.7 anaconda
+> activate DL_Tutorial
+> conda install -c glemaitre imbalanced-learn
+> conda install -c conda-forge tensorflow
+> pip install git+git://github.com/Theano/Theano.git
+> pip install git+git://github.com/fchollet/keras.git
+
