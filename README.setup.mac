@@ -2,13 +2,13 @@
 # ------------------------------
 
 # Download the Anaconda installer
-curl -o Anaconda2-4.3.1-MacOSX-x86_64.sh https://repo.continuum.io/archive/Anaconda2-4.3.1-MacOSX-x86_64.sh
+curl -o Anaconda3-5.0.1-MacOSX-x86_64.sh https://repo.continuum.io/archive/Anaconda3-5.0.1-MacOSX-x86_64.sh
 
 # Make the installer executable
-chmod u+x ./Anaconda2-4.3.1-MacOSX-x86_64.sh 
+chmod u+x ./Anaconda3-5.0.1-MacOSX-x86_64.sh
 
 # Run the installer, accepting the defaults.
-./Anaconda2-4.3.1-MacOSX-x86_64.sh
+./Anaconda3-5.0.1-MacOSX-x86_64.sh
 
 # Source the .bash_profile to add anaconda2/bin to your path
 source ~/.bash_profile
@@ -23,5 +23,6 @@ pip install git+git://github.com/fchollet/keras.git
 git clone https://github.com/ECP-Candle/benchmarks
 
 # Run the first candle benchmark
-pushd benchmarks/P1B1/
-python p1b1_baseline.py 
+pushd dl_tutorials/Topics/1_keras_overview
+python simple_2d_nn_classier.ipynb
+popd
