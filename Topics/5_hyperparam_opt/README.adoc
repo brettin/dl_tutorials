@@ -33,10 +33,14 @@ Then, edit dev/build/swift-t-settings.sh .
 $ dev/build/build-all.sh
 ----
 
+If the build is successful, you will see a final message BUILD SUCCESSFUL from Ant.
+
+Then, add the reported stc/bin directory to your PATH.  This contains the executable program *swift-t* .
+
 == Run the optimization workflow
 
 ----
 $ cd Topics/5_hyperparam_opt
-$ ./workflow.sh
+$ ./workflow.sh X01
 ----
 
