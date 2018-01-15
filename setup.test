@@ -1,0 +1,21 @@
+import tensorflow as tf
+import h5py
+import keras
+import theano
+
+print('using tensorflow ', tf.__version__)
+print('using h5py ', h5py.__version__)
+print('using keras ', keras.__version__)
+print('using theano ', theano.__version__)
+
+message="""
+
+We generally use tensorflow for our deep learning work.
+You can set the backend to tensorflow instead of theano
+by modifying the keras.json file located in your home dir.
+
+cat $HOME/.keras/keras.json
+
+"""
+
+print (message)
