@@ -13,6 +13,9 @@ chmod u+x ./Anaconda3-5.0.1-MacOSX-x86_64.sh
 # Source the .bash_profile to add anaconda3/bin to your path
 source ~/.bash_profile
 
+# Or you can manually update your path
+export PATH=/$HOME/anaconda3/bin:$PATH
+
 # Install additonal modules not shipped with Anaconda
 conda install -c conda-forge tensorflow
 conda update -c anaconda pandas
