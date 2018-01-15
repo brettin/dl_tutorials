@@ -52,6 +52,20 @@ $ swift-t -E 'trace(42);'
 trace: 42
 ----
 
+== Install the Benchmark
+
+This is a cancer benchmark.
+
+----
+$ git clone https://github.com/ECP-CANDLE/Benchmarks.git
+$ cd Benchmarks
+$ cd Pilot1/P1B3
+# Check you are using the right python executable, then:
+$ python p1b3_baseline_keras2.py
+----
+
+This will download a bunch of data, then start running Keras/TensorFlow.
+
 == Run the optimization workflow
 
 ----
