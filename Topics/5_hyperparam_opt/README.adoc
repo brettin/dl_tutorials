@@ -45,6 +45,13 @@ If the build is successful, you will see a final message BUILD SUCCESSFUL from A
 
 Then, add the reported stc/bin directory to your PATH.  This contains the executable program *swift-t* .
 
+You can test the Swift/T installation by running:
+
+----
+$ swift-t -E 'trace(42);'
+trace: 42
+----
+
 == Run the optimization workflow
 
 ----
