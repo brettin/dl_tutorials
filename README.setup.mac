@@ -20,7 +20,6 @@ export PATH=/$HOME/anaconda3/bin:$PATH
 conda install -c conda-forge tensorflow
 conda update -c anaconda pandas
 conda install hdf5
-pip install git+git://github.com/Theano/Theano.git
 pip install git+git://github.com/fchollet/keras.git
 
 # Download the source files for the tutorial
