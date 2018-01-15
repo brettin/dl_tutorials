@@ -1,0 +1,33 @@
+[
+  {
+    "name": "epochs",
+    "type": "constant",
+    "value":1
+  },
+
+  {
+    "name": "clipnorm",
+    "type": "float",
+    "lower": 1e-04,
+    "upper": 1e01,
+    "sigma": 0.2
+  },
+
+  {
+    "name": "activation",
+    "type": "categorical",
+    "values": ["relu", "sigmoid", "tanh"]
+  },
+
+  {
+    "name": "residual",
+    "type": "logical"
+  },
+
+  {
+    "name": "batch_size",
+    "type": "ordered",
+    "values": [32, 64, 128, 256, 512, 1024],
+    "sigma": 1
+  }
+]
