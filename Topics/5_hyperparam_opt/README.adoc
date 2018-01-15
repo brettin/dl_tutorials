@@ -12,6 +12,11 @@ $ pip install hyperopt
 
 === Install Swift/T
 
+First, install MPICH:
+----
+$ sudo apt-get install mpich
+----
+
 Install Swift/T using the release package here:
 
 * http://swift-lang.github.io/swift-t-downloads/1.3/swift-t-1.3.tar.gz
@@ -26,8 +31,11 @@ $ dev/build/init-settings.sh
 
 Then, edit dev/build/swift-t-settings.sh .
 . Set SWIFT_T_PREFIX to any desired installation location
-. Uncomment ENABLE_PYTHON=1
-. Set PYTHON_EXE to your Anaconda Python executable (typically $HOME/anaconda3/bin/python)
+. Either
+.. Uncomment ENABLE_PYTHON=1 and ensure the correct python executable is in PATH, or
+.. Set PYTHON_EXE to your Anaconda Python executable (typically $HOME/anaconda3/bin/python)
+
+Then:
 
 ----
 $ dev/build/build-all.sh
@@ -44,3 +52,24 @@ $ cd Topics/5_hyperparam_opt
 $ ./workflow.sh X01
 ----
 
+
+
+== Systems with MPICH and OpenMPI
+
+This may result in conflicts.  After installing MPICH, do:
+
+----
+$ sudo update-alternatives --set mpi /usr/include/mpich
+----
+
+Then, in swift-t-settings.sh set:
+
+----
+MPI_LIB_DIR=/usr/lib/mpich/lib
+----
+
+and in dev/build/turbine-build.sh, set:
+
+----
+EXTRA_ARGS=--with-launcher=/usr/bin/mpiexec.mpich
+----
