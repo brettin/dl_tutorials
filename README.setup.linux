@@ -10,11 +10,12 @@ chmod u+x ./Anaconda3-5.0.1-Linux-x86_64.sh
 # Run the installer, accepting the defaults.
 ./Anaconda3-5.0.1-Linux-x86_64.sh
 
-# Source the .bash_profile to add anaconda2/bin to your path
+# Source the relevant bash file to add anaconda3/bin to your path
 source ~/.bash_profile
+source ~/.bashrc
 
 # Or you can manually update your path
-# export PATH=/$HOME/anaconda3/bin:$PATH
+export PATH=/$HOME/anaconda3/bin:$PATH
 
 # Install an additonal module not shipped with Anaconda
 conda install tensorflow
@@ -25,4 +26,7 @@ pip install git+git://github.com/fchollet/keras.git
 # Download the source files for the tutorial
 git clone https://github.com/brettin/dl_tutorials
 
-# Run the first tutorial example
+# Run a quick test
+cd dl_tutorials
+which python
+python setup.test
