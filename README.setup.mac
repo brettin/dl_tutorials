@@ -10,7 +10,7 @@ chmod u+x ./Anaconda3-5.0.1-MacOSX-x86_64.sh
 # Run the installer, accepting the defaults.
 ./Anaconda3-5.0.1-MacOSX-x86_64.sh
 
-# Source the .bash_profile to add anaconda2/bin to your path
+# Source the .bash_profile to add anaconda3/bin to your path
 source ~/.bash_profile
 
 # Install additonal modules not shipped with Anaconda
@@ -22,4 +22,8 @@ pip install git+git://github.com/fchollet/keras.git
 # Download the source files for the tutorial
 git clone https://github.com/brettin/dl_tutorials
 
-# Run the first tutorial example 
+# Run a quick test
+cd dl_tutorials
+which python
+python setup.test
+
