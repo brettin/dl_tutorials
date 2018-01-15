@@ -7,7 +7,7 @@ Justin M. Wozniak <wozniak@mcs.anl.gov>
 === Install Hyperopt
 
 ----
-$ pip install hyperopt
+$ pip install deap
 ----
 
 === Install Swift/T
@@ -56,15 +56,40 @@ trace: 42
 
 This is a cancer benchmark.
 
+=== Get the source code
+
 ----
 $ git clone https://github.com/ECP-CANDLE/Benchmarks.git
 $ cd Benchmarks
-$ cd Pilot1/P1B3
-# Check you are using the right python executable, then:
-$ python p1b3_baseline_keras2.py
+$ git checkout frameworks
 ----
 
-This will download a bunch of data, then start running Keras/TensorFlow.
+Note where the Benchmarks are installed
+
+----
+BENCHMARKS=$PWD
+----
+
+=== Get the data
+
+Run the data downloader script from the Tutorial clone and the BENCHMARKS location noted above.
+
+----
+$ Topics/5_hyperparam_opt/get-data.sh $BENCHMARKS
+----
+
+== Test the benchmark
+
+Run this to test the benchmark by itself (no hyperparameter search), and look for the given output.
+
+----
+$ cd $BENCHMARKS/Pilot1/Combo
+# Check you are using the right python executable, then:
+$ python combo_baseline_keras2.py
+Using TensorFlow backend.
+...
+Params: {'activation': 'relu' ...
+----
 
 == Run the optimization workflow
 
