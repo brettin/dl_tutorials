@@ -14,7 +14,8 @@ chmod u+x ./Anaconda3-5.0.1-MacOSX-x86_64.sh
 source ~/.bash_profile
 
 # Install additonal modules not shipped with Anaconda
-conda install tensorflow
+conda install -c conda-forge tensorflow
+conda update -c anaconda pandas
 conda install hdf5
 pip install git+git://github.com/Theano/Theano.git
 pip install git+git://github.com/fchollet/keras.git
