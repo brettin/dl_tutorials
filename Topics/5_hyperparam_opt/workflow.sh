@@ -1,6 +1,8 @@
 #!/bin/bash
 set -eu
 
+# WORKFLOW SH
+
 if [[ ${#} != 1 ]]
 then
   echo "Usage: ./workflow.sh EXPERIMENT_ID "
@@ -20,36 +22,34 @@ mkdir -pv $TURBINE_OUTPUT
 # Of these, 2 are reserved for the system
 export PROCS=3
 
-# Location of the Benchmark- edit this if necessary
-P1B1_DIR=$HOME/proj/Benchmarks/Pilot1/P1B1
-export PYTHONPATH=$EMEWS_PROJECT_ROOT/ext/EQ-Py:$P1B1_DIR
-echo PYTHONPATH=$PYTHONPATH
-
+# EMEWS settings
+EQPY=$EMEWS_PROJECT_ROOT/ext/EQ-Py
 # EMEWS resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
-# EQ/Py location
-EQPY=$EMEWS_PROJECT_ROOT/ext/EQ-Py
+# Set PYTHONPATH
+# Location of the Benchmark- edit this if necessary
+P1B1=/usb1/dl-tutorial-build/Benchmarks/Pilot1/P1B1
+export PYTHONPATH=
+PYTHONPATH+=$EQPY:
+PYTHONPATH+=$EMEWS_PROJECT_ROOT/python:
+PYTHONPATH+=$P1B1
+echo PYTHONPATH=$PYTHONPATH
 
-# total number of model runs
-EVALUATIONS=4
-# concurrent model runs
-PARAM_BATCH_SIZE=1
+# mlrMBO settings
+PARAM_SET_FILE=$EMEWS_PROJECT_ROOT/data/params.R
+MAX_CONCURRENT_EVALUATIONS=2
+MAX_ITERATIONS=3
 
-SPACE_FILE="$EMEWS_PROJECT_ROOT/data/space_description.txt"
-DATA_DIRECTORY="$EMEWS_PROJECT_ROOT/data"
+# Benchmark settings
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
 
-# TODO edit command line arguments, e.g. -nv etc., as appropriate
-# for your EQ/Py based run. $* will pass all of this script's
-# command line arguments to the swift script
-CMD_LINE_ARGS=( $*
-                -seed=1234
-                -max_evals=$EVALUATIONS
-                -param_batch_size=$PARAM_BATCH_SIZE
-                -space_description_file=$SPACE_FILE
-                -data_directory=$DATA_DIRECTORY )
-
+# Construct the command line given to Swift/T
+CMD_LINE_ARGS=( -pp=$MAX_CONCURRENT_EVALUATIONS
+                -it=$MAX_ITERATIONS "
+                -param_set_file=$PARAM_SET_FILE )
+              )
 
 # Scheduler settings for large systems (unused for laptops)
 export QUEUE=batch
@@ -70,4 +70,6 @@ which swift-t
 set -x
 swift-t $MACHINE -p -n $PROCS \
         -I $EQPY -r $EQPY \
-        $EMEWS_PROJECT_ROOT/workflow.swift $CMD_LINE_ARGS
+        $EMEWS_PROJECT_ROOT/workflow.swift ${CMD_LINE_ARGS[@]}
+set +x
+echo WORKFLOW COMPLETE.
