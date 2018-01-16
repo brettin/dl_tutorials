@@ -11,7 +11,7 @@ if (emews_root == "") {
 wd <- getwd()
 # setwd(r_root)
 
-source("mlrMBO_utils.R")
+source(paste0(emews_root,"/mlrMBO_utils.R"))
 
 # EQ/R based parallel map
 parallelMap2 <- function(fun, ...,

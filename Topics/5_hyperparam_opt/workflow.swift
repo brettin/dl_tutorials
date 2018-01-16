@@ -54,7 +54,7 @@ app (void o) run_model (string model_sh, string params,
                         string run_id)
 {
   //                  1         2      3
-  "bash" "./model.sh" FRAMEWORK params run_id;
+  "bash" model_sh FRAMEWORK params run_id;
 }
 
 // Get the results from a NN run

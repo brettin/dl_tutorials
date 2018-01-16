@@ -11,13 +11,14 @@ then
 fi
 export EXPID=$1
 
-export MODEL_NAME="nt3"
-
 # Turn off Swift/T debugging
 export TURBINE_LOG=0 TURBINE_DEBUG=0 ADLB_DEBUG=0
 
 # Find my installation directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 ) ; /bin/pwd )
+
+export MODEL_SH=$EMEWS_PROJECT_ROOT/model.sh
+export MODEL_NAME="nt3"
 
 # Set the output directory
 export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
@@ -45,22 +46,16 @@ CMD_LINE_ARGS=( -pp=$MAX_CONCURRENT_EVALUATIONS
                 -param_set_file=$PARAM_SET_FILE
               )
 
-
-if [ -n "$MACHINE" ]
-then
-  MACHINE="-m $MACHINE"
-fi
-
 # USER: Set this to 1 if on Bebop:
-# BEBOP=0
-BEBOP=1
+BEBOP=0
+# BEBOP=1
 
 if (( BEBOP ))
 then
   EQR=/home/wozniak/Public/sfw/bebop/EQ-R
 
-  # Scheduler settings for large systems (unused for laptops)
-  export QUEUE=batch
+  # Scheduler settings for Swift/T on large systems (unused for laptops)
+  # export QUEUE=batch
   export WALLTIME=00:10:00
   # Processes per node
   export PPN=1
@@ -70,7 +65,19 @@ then
   # or empty for an immediate non-queued unscheduled run
   MACHINE="-m slurm"
 
-  PATH=/home/wozniak/Public/sfw/bebop/compute/swift-t-dl/stc/bin
+  module add bzip2
+
+  # Set up R
+  R=/home/wozniak/Public/sfw/bebop/R-3.4.3/lib64/R
+  export LD_LIBRARY_PATH=$R/lib:$R/library/Rcpp/lib:$R/library/RInside/lib
+
+  # Set up LD_LIBRARY_PATH for Swift/T
+  LLP=$LD_LIBRARY_PATH:/blues/gpfs/home/software/spack-0.10.1/opt/spack/linux-centos7-x86_64/gcc-7.1.0/bzip2-1.0.6-pvvwqlj6u6vvumzqdybb3svmod5qwzbu/lib
+  ENVS="-e LD_LIBRARY_PATH=$LLP"
+
+  # Set Swift/T PATHs
+  PATH=/soft/jdk/1.8.0_51/bin:$PATH
+  PATH=/home/wozniak/Public/sfw/bebop/compute/swift-t-dl/stc/bin:$PATH
 
 else
   EQR=$EMEWS_PROJECT_ROOT/EQ-R
@@ -78,11 +85,18 @@ else
   R=$HOME/Public/sfw/R-3.4.3/lib/R
   export LD_LIBRARY_PATH=$R/lib:$R/library/Rcpp/lib:$R/library/RInside/lib
   MACHINE=""
+  ENVS=""
 fi
 
 set -x
 swift-t $MACHINE -p -n $PROCS \
-        -I $EQR -r $EQR \
+        -I $EQR -r $EQR $ENVS \
         $EMEWS_PROJECT_ROOT/workflow.swift ${CMD_LINE_ARGS[@]}
 set +x
-echo WORKFLOW COMPLETE.
+
+if (( BEBOP ))
+then
+  echo WORKFLOW SUBMITTED.
+else
+  echo WORKFLOW COMPLETE.
+fi

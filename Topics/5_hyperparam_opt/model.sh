@@ -60,6 +60,9 @@ cd $INSTANCE_DIRECTORY
 # USER: Set the location of your Benchmarks
 export PYTHONPATH=$HOME/proj/Benchmarks/Pilot1/NT3
 
+# USER: If on Bebop, uncomment this:
+# PATH=/home/wozniak/Public/sfw/anaconda3/bin:$PATH
+
 source $EMEWS_PROJECT_ROOT/utils.sh
 
 BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-0}
@@ -71,6 +74,9 @@ arg_array=( "$EMEWS_PROJECT_ROOT/model_runner.py"
             "$RUNID"
             "$OBJ_PARAM"
             "$BENCHMARK_TIMEOUT")
+echo
+echo "Using python:"
+which python
 MODEL_CMD="python ${arg_array[@]}"
 echo MODEL_CMD: $MODEL_CMD
 if ! $TIMEOUT_CMD python "${arg_array[@]}"
