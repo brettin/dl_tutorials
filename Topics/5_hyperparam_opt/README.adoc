@@ -186,7 +186,6 @@ Run the python command above on the login node (under nice!) until the data has 
 Then, run:
 
 ----
-$ cd Topics/5_hyperparam_opt
 $ ./workflow.sh X01
 ----
 
