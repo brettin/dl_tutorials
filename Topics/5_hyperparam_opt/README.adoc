@@ -1,4 +1,6 @@
 
+:toc:
+
 = Hyperparameter Optimization: Getting the Most Out of Your Models
 Justin M. Wozniak <wozniak@mcs.anl.gov>
 
