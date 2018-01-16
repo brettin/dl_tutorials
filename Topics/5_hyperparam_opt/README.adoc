@@ -4,10 +4,31 @@ Justin M. Wozniak <wozniak@mcs.anl.gov>
 
 == Installation
 
-=== Install Hyperopt
+=== Install R
 
 ----
-$ pip install deap
+wget
+./configure --without-ICU
+make -j 4
+make install
+----
+
+=== Install EQ/R
+
+----
+cd EQ-R/eqr
+R=$HOME/Public/sfw/R-3.4.3/lib/R
+export CPPFLAGS="-I/usr/include/tcl8.6
+   -I$R/include
+   -I$R/library/Rcpp/include
+   -I$R/library/RInside/include"
+
+export LDFLAGS="-L/usr/lib/tcl8.6 -L$R/lib -L$R/library/Rcpp/lib -L$R/library/RInside/lib"
+
+./configure --prefix=$PWD/.. \
+  
+make -j 2
+make install
 ----
 
 === Install Swift/T

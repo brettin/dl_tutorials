@@ -22,9 +22,8 @@ do
   esac
 done
 shift $(( OPTIND - 1 ))
-set -x
 
-if [ ${#} != 4 ]
+if [ ${#} != 3 ]
 then
   usage
   exit 1
@@ -39,16 +38,13 @@ echo $PARAMS
 shift
 
 RUNID=$1
-shift
 
 # loss or corr
-OBJ_PARAM="$1"
-echo $OBJ_PARAM
+OBJ_PARAM=loss
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
 INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
-shift
 
 TIMEOUT_CMD=""
 if [ -n "$TIMEOUT" ]; then
@@ -61,12 +57,13 @@ LOG_FILE=$INSTANCE_DIRECTORY/model.log
 # exec 2>&1
 cd $INSTANCE_DIRECTORY
 
-# get the site and source lang-app-{SITE} from workflow/common/sh folder
-WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
-source $WORKFLOWS_ROOT/common/sh/utils.sh
-source_site langs-app $SITE
+export PYTHONPATH=$HOME/proj/Benchmarks/Pilot1/NT3
 
-arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
+source $EMEWS_PROJECT_ROOT/utils.sh
+
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-0}
+
+arg_array=( "$EMEWS_PROJECT_ROOT/model_runner.py"
             "$PARAMS"
             "$INSTANCE_DIRECTORY"
             "$FRAMEWORK"

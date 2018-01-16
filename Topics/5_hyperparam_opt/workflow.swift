@@ -1,55 +1,53 @@
+
 import files;
 import string;
 import sys;
 import io;
 import stats;
-import python;
 import math;
 import location;
 import assert;
 import R;
 
-import EQPy;
+import EQR;
 
-// EMEWS settings:
 string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
-
-// DEAP settings:
-string strategy = argv("strategy");
-string ga_params_file = argv("ga_params");
-string init_params_file = argv("init_params", "");
-float mut_prob = string2float(argv("mutation_prob", "0.2"));
-
+int propose_points = toint(argv("pp", "3"));
+int max_budget = toint(argv("mb", "110"));
+int max_iterations = toint(argv("it", "5"));
+int design_size = toint(argv("ds", "10"));
+string param_set = argv("param_set_file");
 string model_name = argv("model_name");
-string model_sh = argv("model_sh");
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 string obj_param = argv("obj_param", "val_loss");
-
-printf("turbine_output: " + turbine_output);
 string site = argv("site");
 
-printf("model_sh: %s", model_sh);
+string FRAMEWORK = "keras";
 
-(string obj_result) obj(string params,
-                        string run_id) {
+(string result) obj(string params, string run_id)
+{
+  string model_sh       = getenv("MODEL_SH");
+  string turbine_output = getenv("TURBINE_OUTPUT");
+
   string outdir = "%s/run/%s" % (turbine_output, run_id);
-  printf("running model shell script in: %s", outdir);
+  // printf("running model shell script in: %s", outdir);
   string result_file = outdir/"result.txt";
-  wait (run_model(params, run_id))
+  wait (run_model(model_sh, params, run_id))
   {
-    obj_result = get_results(result_file);
+    result = get_results(result_file);
   }
-  printf("result(%s): %s", run_id, obj_result);
+  printf("result(%s): %s", run_id, result);
 }
 
-app (void o) run_model (string params_string,
+app (void o) run_model (string model_sh, string params,
                         string run_id)
 {
-  "bash" "./model.sh" "keras" params_string run_id ;
+  //                      1       2       3      
+      "bash" "./model.sh" FRAMEWORK params   run_id;
 }
 
 (string obj_result) get_results(string result_file) {
@@ -62,38 +60,33 @@ app (void o) run_model (string params_string,
   }
 }
 
-string FRAMEWORK = "keras";
-
-(void v) loop(location ME, int ME_rank) {
-
+(void v) loop(location ME, int ME_rank)
+{
   for (boolean b = true, int i = 1;
        b;
        b=c, i = i + 1)
   {
-    string params =  EQPy_get(ME);
+    string params =  EQR_get(ME);
     boolean c;
 
     if (params == "DONE")
     {
-      string finals =  EQPy_get(ME);
+      string finals =  EQR_get(ME);
       // TODO if appropriate
       // split finals string and join with "\\n"
       // e.g. finals is a ";" separated string and we want each
       // element on its own line:
       // multi_line_finals = join(split(finals, ";"), "\\n");
-      string fname = "%s/final_result_%i" % (turbine_output, ME_rank);
-      file results_file <fname> = write(finals) =>
-        printf("Writing final result to %s", fname) =>
+      string fname = "%s/final_res.Rds" % (turbine_output);
+      printf("See results in %s", fname) =>
         // printf("Results: %s", finals) =>
         v = make_void() =>
         c = false;
     }
-    else if (params == "EQPY_ABORT")
+    else if (params == "EQR_ABORT")
     {
-      printf("EQPy Aborted");
-      string why = EQPy_get(ME);
-      // TODO handle the abort if necessary
-      // e.g. write intermediate results ...
+      printf("EQR aborted: see output for R error") =>
+        string why = EQR_get(ME);
       printf("%s", why) =>
         v = propagate() =>
         c = false;
@@ -106,51 +99,59 @@ string FRAMEWORK = "keras";
       {
         results[j] = obj(p, "%000i_%0000i" % (i,j));
       }
-      string result = join(results, ";");
+      string res = join(results, ";");
       // printf(res);
-      EQPy_put(ME, result) => c = true;
+      EQR_put(ME, res) => c = true;
     }
   }
 }
 
-(void o) start (int ME_rank, int iters, int pop, int trials, int seed) {
-  location ME = locationFromRank(ME_rank);
-  algo_params = "%d,%d,%d,'%s',%f, '%s', '%s'" %
-    (iters, pop, seed, strategy, mut_prob, ga_params_file, init_params_file);
-  EQPy_init_package(ME,"deap_ga") =>
-    EQPy_get(ME) =>
-    EQPy_put(ME, algo_params) =>
+// These must agree with the arguments to the objective function in mlrMBO.R,
+// except param.set.file is removed and processed by the mlrMBO.R algorithm wrapper.
+string algo_params_template =
+"""
+param.set.file='%s',
+max.budget = %d,
+max.iterations = %d,
+design.size=%d,
+propose.points=%d
+""";
+
+(void o) start(int ME_rank) {
+    location ME = locationFromRank(ME_rank);
+
+    // algo_params is the string of parameters used to initialize the
+    // R algorithm. We pass these as R code: a comma separated string
+    // of variable=value assignments.
+    string algo_params = algo_params_template %
+      (param_set, max_budget, max_iterations,
+       design_size, propose_points);
+    string algorithm = emews_root/"mlrMBO3.R";
+    EQR_init_script(ME, algorithm) =>
+    EQR_get(ME) =>
+    EQR_put(ME, algo_params) =>
     loop(ME, ME_rank) => {
-    EQPy_stop(ME);
-    o = propagate();
-  }
+        EQR_stop(ME) =>
+        EQR_delete_R(ME);
+        o = propagate();
+    }
 }
 
 main() {
 
   assert(strlen(emews_root) > 0, "Set EMEWS_PROJECT_ROOT!");
 
-  int random_seed    = string2int(argv("seed", "0"));
-  int num_iter       = string2int(argv("ni","100"));
-  int num_variations = string2int(argv("nv", "5"));
-  int num_pop        = string2int(argv("np","100"));
-
-  printf("NI: %i # num_iter", num_iter);
-  printf("NV: %i # num_variations", num_variations);
-  printf("NP: %i # num_pop", num_pop);
-  printf("MUTPB: %f # mut_prob", mut_prob);
-
   int ME_ranks[];
   foreach r_rank, i in r_ranks{
-    ME_ranks[i] = string2int(r_rank);
+    ME_ranks[i] = toint(r_rank);
   }
 
   foreach ME_rank, i in ME_ranks {
-    start(ME_rank, num_iter, num_pop, num_variations, random_seed) =>
+    start(ME_rank) =>
     printf("End rank: %d", ME_rank);
   }
 }
 
 // Local Variables:
-// c-basic-offset: 4
+// c-basic-offset: 2
 // End:
