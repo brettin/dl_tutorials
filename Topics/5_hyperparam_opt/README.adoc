@@ -7,11 +7,13 @@ Justin M. Wozniak <wozniak@mcs.anl.gov>
 === Install R
 
 ----
-wget
-./configure --prefix=$HOME/R-3.4.3 --without-ICU
-make -j 4
-make install
+$ wget https://cran.r-project.org/src/base/R-3/R-3.4.3.tar.gz
+$ ./configure --prefix=$HOME/R-3.4.3 --without-ICU
+$ make -j 4
+$ make install
 ----
+
+and record your R installation location for use below.
 
 === Install EQ/R
 
