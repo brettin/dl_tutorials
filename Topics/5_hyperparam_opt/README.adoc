@@ -6,9 +6,11 @@ Justin M. Wozniak <wozniak@mcs.anl.gov>
 
 === Install R
 
+==== From source
+
 ----
 $ wget https://cran.r-project.org/src/base/R-3/R-3.4.3.tar.gz
-$ ./configure --prefix=$HOME/R-3.4.3 --without-ICU
+$ ./configure --prefix=$HOME/R-3.4.3 --without-ICU --enable-R-shlib
 $ make -j 4
 $ make install
 ----
