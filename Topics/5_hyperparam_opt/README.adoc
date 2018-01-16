@@ -73,16 +73,17 @@ $ make install
 
 ==== On Bebop
 
-Add to PATH:
+==== On Bebop
+
+This is already installed.  Add to PATH:
 
 ----
 /soft/jdk/1.8.0_51/bin
 /home/wozniak/Public/sfw/bebop/compute/swift-t-dl/stc/bin
 ----
 
-Run 'nice swift-t' to run on the login node.
-
-Run 'swift-t -m slurm' to run on the compute nodes.
+* Run 'nice swift-t' to run on the login node.
+* Run 'swift-t -m slurm' to run on the compute nodes.
 
 ==== From source
 
