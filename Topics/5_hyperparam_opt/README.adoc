@@ -21,6 +21,8 @@ Put R in your PATH and record your R installation location for use below.
 $ Topics/5_hyperparam_opt/install-candle.sh
 ----
 
+This step can take under 10 minutes on a fast machine, but on a slower machine or VM, it can take up to 2 hours.
+
 === Install EQ/R
 
 ----
