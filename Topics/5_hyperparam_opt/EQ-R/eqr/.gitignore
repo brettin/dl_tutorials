@@ -1,9 +1,11 @@
 autom4te.cache
 config.h.in
+config.h
 configure
 settings.sh
 settings.mk
 config.log
+config.status
 Makefile
 *.dylib
 *.so

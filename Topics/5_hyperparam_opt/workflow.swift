@@ -1,4 +1,8 @@
 
+/*
+  WORKFLOW.SWIFT
+*/
+
 import files;
 import string;
 import sys;
@@ -28,6 +32,8 @@ string site = argv("site");
 
 string FRAMEWORK = "keras";
 
+// Call to objective function: the NN model,
+//  then get results from output file
 (string result) obj(string params, string run_id)
 {
   string model_sh       = getenv("MODEL_SH");
@@ -43,18 +49,24 @@ string FRAMEWORK = "keras";
   printf("result(%s): %s", run_id, result);
 }
 
+// Run the Python code
 app (void o) run_model (string model_sh, string params,
                         string run_id)
 {
-  //                      1       2       3      
-      "bash" "./model.sh" FRAMEWORK params   run_id;
+  //                  1         2      3
+  "bash" "./model.sh" FRAMEWORK params run_id;
 }
 
-(string obj_result) get_results(string result_file) {
-  if (file_exists(result_file)) {
+// Get the results from a NN run
+(string obj_result) get_results(string result_file)
+{
+  if (file_exists(result_file))
+  {
     file line = input(result_file);
     obj_result = trim(read(line));
-  } else {
+  }
+  else
+  {
     printf("File not found: %s", result_file);
     obj_result = "NaN";
   }
@@ -71,12 +83,8 @@ app (void o) run_model (string model_sh, string params,
 
     if (params == "DONE")
     {
+      // We are done: store the final results
       string finals =  EQR_get(ME);
-      // TODO if appropriate
-      // split finals string and join with "\\n"
-      // e.g. finals is a ";" separated string and we want each
-      // element on its own line:
-      // multi_line_finals = join(split(finals, ";"), "\\n");
       string fname = "%s/final_res.Rds" % (turbine_output);
       printf("See results in %s", fname) =>
         // printf("Results: %s", finals) =>
@@ -106,7 +114,7 @@ app (void o) run_model (string model_sh, string params,
   }
 }
 
-// These must agree with the arguments to the objective function in mlrMBO.R,
+// These must agree with the arguments to the objective function in mlrMBO3.R,
 // except param.set.file is removed and processed by the mlrMBO.R algorithm wrapper.
 string algo_params_template =
 """

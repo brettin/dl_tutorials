@@ -8,7 +8,7 @@ Justin M. Wozniak <wozniak@mcs.anl.gov>
 
 ----
 wget
-./configure --without-ICU
+./configure --prefix=$HOME/R-3.4.3 --without-ICU
 make -j 4
 make install
 ----
@@ -16,19 +16,13 @@ make install
 === Install EQ/R
 
 ----
-cd EQ-R/eqr
-R=$HOME/Public/sfw/R-3.4.3/lib/R
-export CPPFLAGS="-I/usr/include/tcl8.6
-   -I$R/include
-   -I$R/library/Rcpp/include
-   -I$R/library/RInside/include"
-
-export LDFLAGS="-L/usr/lib/tcl8.6 -L$R/lib -L$R/library/Rcpp/lib -L$R/library/RInside/lib"
-
-./configure --prefix=$PWD/.. \
-  
-make -j 2
-make install
+$ cd EQ-R/eqr
+$ cp settings.template.sh settings.sh
+# edit settings.sh to set R_HOME, Tcl settings
+$ source settings.sh
+$ ./configure --prefix=$PWD/..
+$ make -j 2
+$ make install
 ----
 
 === Install Swift/T
@@ -36,6 +30,16 @@ make install
 First, install MPICH:
 ----
 $ sudo apt-get install mpich
+----
+
+Or install from source:
+
+----
+$ wget http://www.mpich.org/static/downloads/3.2.1/mpich-3.2.1.tar.gz
+$ tar xfz mpich-3.2.1.tar.gz
+$ ./configure --prefix=...
+$ make -j 4
+$ make install
 ----
 
 Install Swift/T using the release package here:
@@ -52,9 +56,8 @@ $ dev/build/init-settings.sh
 
 Then, edit dev/build/swift-t-settings.sh .
 . Set SWIFT_T_PREFIX to any desired installation location
-. Either
-.. Uncomment ENABLE_PYTHON=1 and ensure the correct python executable is in PATH, or
-.. Set PYTHON_EXE to your Anaconda Python executable (typically $HOME/anaconda3/bin/python)
+. Set ENABLE_R=1
+. Set R_INSTALL to your R installation
 
 Then:
 
@@ -91,35 +94,30 @@ Note where the Benchmarks are installed
 BENCHMARKS=$PWD
 ----
 
-=== Get the data
-
-Run the data downloader script from the Tutorial clone and the BENCHMARKS location noted above.
-
-----
-$ Topics/5_hyperparam_opt/get-data.sh $BENCHMARKS
-----
-
 == Test the benchmark
 
 Run this to test the benchmark by itself (no hyperparameter search), and look for the given output.
 
 ----
-$ cd $BENCHMARKS/Pilot1/Combo
+$ cd $BENCHMARKS/Pilot1/NT3
 # Check you are using the right python executable, then:
-$ python combo_baseline_keras2.py
+$ python nt3_baseline_keras2.py
 Using TensorFlow backend.
 ...
-Params: {'activation': 'relu' ...
+Params: { ...
 ----
 
 == Run the optimization workflow
+
+. Edit model.sh to set PYTHONPATH to your Benchmarks location
+. Edit workflow.sh to set the R variable to your R installation
+
+Then, run:
 
 ----
 $ cd Topics/5_hyperparam_opt
 $ ./workflow.sh X01
 ----
-
-
 
 == Systems with MPICH and OpenMPI
 

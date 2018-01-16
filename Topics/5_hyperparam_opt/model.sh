@@ -57,6 +57,7 @@ LOG_FILE=$INSTANCE_DIRECTORY/model.log
 # exec 2>&1
 cd $INSTANCE_DIRECTORY
 
+# USER: Set the location of your Benchmarks
 export PYTHONPATH=$HOME/proj/Benchmarks/Pilot1/NT3
 
 source $EMEWS_PROJECT_ROOT/utils.sh

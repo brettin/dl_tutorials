@@ -1,8 +1,7 @@
 
 # MODEL RUNNER PY
 
-# Currently only supports NT3_TC1
-# See __main__ section for usage
+# Light Python wrapper around Benchmark
 
 # tensoflow.__init__ calls _os.path.basename(_sys.argv[0])
 # so we need to create a synthetic argv.
@@ -62,11 +61,11 @@ def run(hyper_parameter_map, obj_param):
             v = list()
             v.append(cp_str)
         params[k] = v
-    
+
     logger.debug("WRITE_PARAMS START")
     runner_utils.write_params(params, hyper_parameter_map)
     logger.debug("WRITE_PARAMS STOP")
- 
+
     history = pkg.run(params)
 
     runner_utils.keras_clear_session(framework)

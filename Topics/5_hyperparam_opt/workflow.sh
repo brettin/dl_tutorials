@@ -2,21 +2,24 @@
 set -eu
 
 # WORKFLOW SH
+# Main user entry point
 
 if [[ ${#} != 1 ]]
 then
-  echo "Usage: ./workflow.sh EXPERIMENT_ID "
+  echo "Usage: ./workflow.sh EXPERIMENT_ID"
   exit 1
 fi
 export EXPID=$1
 
 export MODEL_NAME="nt3"
 
+# Turn off Swift/T debugging
 export TURBINE_LOG=0 TURBINE_DEBUG=0 ADLB_DEBUG=0
 
 # Find my installation directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 ) ; /bin/pwd )
 
+# Set the output directory
 export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
 mkdir -pv $TURBINE_OUTPUT
 
@@ -56,10 +59,10 @@ then
   MACHINE="-m $MACHINE"
 fi
 
-which swift-t
 
 EQR=$EMEWS_PROJECT_ROOT/EQ-R
 
+# USER: set the R variable to your R installation
 R=$HOME/Public/sfw/R-3.4.3/lib/R
 export LD_LIBRARY_PATH=$R/lib:$R/library/Rcpp/lib:$R/library/RInside/lib
 

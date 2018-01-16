@@ -1,11 +1,22 @@
+
+# R install where libraries and includes are under
+# a common directory e.g. a local install of R in a
+# user's home directory.
+# USER: Just set R_HOME
+R_HOME=$HOME/Public/sfw/R-3.4.3
+R_INCLUDE=$R_HOME/lib/R/include
+R_LIB=$R_HOME/lib/R/lib
+R_INSIDE=$R_HOME/lib/R/library/RInside
+RCPP=$R_HOME/lib/R/library/Rcpp
+
 # R system-wide install where libraries and includes have
 # a different parent and optional packages are installed within
 # a user's home directory (e.g. Ubuntu 16.04)
-R_INCLUDE=/usr/share/R/include
-R_LIB=/usr/lib/R/lib
-R_LOCAL_LIB=$HOME/R/x86_64-pc-linux-gnu-library/3.3
-R_INSIDE=$R_LOCAL_LIB/RInside
-RCPP=$R_LOCAL_LIB/Rcpp
+# R_INCLUDE=/usr/share/R/include
+# R_LIB=/usr/lib/R/lib
+# R_LOCAL_LIB=$HOME/R/x86_64-pc-linux-gnu-library/3.3
+# R_INSIDE=$R_LOCAL_LIB/RInside
+# RCPP=$R_LOCAL_LIB/Rcpp
 
 # R system-wide install where libraries and includes
 # are under a common system wide home directory, and 3rd party
@@ -17,15 +28,6 @@ RCPP=$R_LOCAL_LIB/Rcpp
 # R_INSIDE=$R_LOCAL_LIB/RInside
 # RCPP=$R_LOCAL_LIB/Rcpp
 
-# R install where libraries and includes are under
-# a common directory e.g. a local install of R in a
-# user's home directory.
-# R_HOME=$HOME/sfw/R-3.0.1
-# R_INCLUDE=$R_HOME/lib/R/include
-# R_LIB=$R_HOME/lib/R/lib
-# R_INSIDE=$R_HOME/lib/R/library/RInside
-# RCPP=$R_HOME/lib/R/library/Rcpp
-
 # OSX - R installed in /Library/Framework/R with
 # Rcpp and RInside installed beneath that
 # R_HOME=/Library/Frameworks/R.framework
@@ -34,15 +36,17 @@ RCPP=$R_LOCAL_LIB/Rcpp
 # R_INSIDE=$R_HOME/Resources/RInside
 # RCPP=$R_HOME/Resources/Rcpp
 
-#system-wide tcl
-TCL_INCLUDE=/usr/local/include/tcl
-TCL_LIB=/usr/local/lib
+# System-wide Tcl, such as Ubuntu
+TCL_INCLUDE=/usr/include/tcl8.6
+TCL_LIB=/usr/lib/tcl8.6
 TCL_LIBRARY=tcl8.6
 
-# a local tcl
+# A hand-built local Tcl
 # TCL_INCLUDE=$HOME/sfw/tcl-8.6.0/include
 # TCL_LIB=$HOME/sfw/tcl-8.6.0/lib
 # TCL_LIBRARY=tcl8.6
+
+## Do not modify below here:
 
 CPPFLAGS=""
 CPPFLAGS+="-I$TCL_INCLUDE "
