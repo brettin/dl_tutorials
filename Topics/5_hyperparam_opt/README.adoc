@@ -157,7 +157,7 @@ Params: { ...
 
 === On Bebop
 
-Run this on the compute node (under nice!) until the data has been downloaded, then kill it when TensorFlow starts (Ctrl-C).
+Run the command above on the login node (under nice!) until the data has been downloaded, then kill it when TensorFlow starts (Ctrl-C).  Then, submit to the compute as shown below.
 
 == Run the optimization workflow
 
