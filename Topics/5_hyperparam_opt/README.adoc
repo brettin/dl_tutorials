@@ -64,6 +64,7 @@ $ make install
 Add to PATH:
 
 ----
+/soft/jdk/1.8.0_51/bin
 /home/wozniak/Public/sfw/bebop/compute/swift-t-dl/stc/bin
 ----
 
@@ -161,7 +162,9 @@ Run the command above on the login node (under nice!) until the data has been do
 
 == Run the optimization workflow
 
-. Edit model.sh to set PYTHONPATH to your Benchmarks location
+. Edit model.sh to
+.. set PYTHONPATH to your Benchmarks location
+.. uncomment the anaconda3 PATH entry
 . Edit workflow.sh to set the R variable to your R installation
 
 Then, run:
