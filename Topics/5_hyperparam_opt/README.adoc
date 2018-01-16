@@ -175,6 +175,10 @@ where X01 is a name you give the the experiment run.
 
 This will run for a long time.  Press Ctrl-C to cancel.
 
+=== On Bebop
+
+Swift/T will report a job number (JOB_ID) and output directory (TURBINE_OUTPUT).  Use sqstat to determine when the job starts, at which point you can start viewing output in output.txt .
+
 === Shrink the data
 
 This script will back up your original data and create smaller data files.
