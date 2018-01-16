@@ -127,6 +127,20 @@ $ cd Topics/5_hyperparam_opt
 $ ./workflow.sh X01
 ----
 
+where X01 is a name you give the the experiment run.
+
+This will run for a long time.  Press Ctrl-C to cancel.
+
+=== Shrink the data
+
+This script will back up your original data and create smaller data files.
+
+----
+$ ./data-shrink.sh $BENCHMARKS/Data/Pilot1
+----
+
+Then, run the workflow again.  It should complete in a matter of seconds on a fast system.
+
 == Systems with MPICH and OpenMPI
 
 This may result in conflicts.  After installing MPICH, do:
