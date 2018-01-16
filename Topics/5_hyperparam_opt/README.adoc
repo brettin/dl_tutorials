@@ -162,7 +162,13 @@ Params: { ...
 
 === On Bebop
 
-Run the command above on the login node (under nice!) until the data has been downloaded, then kill it when TensorFlow starts (Ctrl-C).  Then, submit to the compute as shown below.
+Add this Anaconda installation to your PATH:
+
+----
+/home/wozniak/Public/sfw/anaconda3/bin
+----
+
+Run the python command above on the login node (under nice!) until the data has been downloaded, then kill it when TensorFlow starts (Ctrl-C).  Then, submit to the compute as shown below.
 
 == Run the optimization workflow
 
