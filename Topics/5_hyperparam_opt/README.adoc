@@ -3,6 +3,7 @@
 Justin M. Wozniak <wozniak@mcs.anl.gov>
 
 The notes below include modes for
+
 * installing from source on your machine (does not require root)
 * running from pre-installed software on LCRC Bebop.
 
