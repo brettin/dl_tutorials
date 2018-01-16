@@ -180,9 +180,7 @@ Run the python command above on the login node (under nice!) until the data has 
 
 == Run the optimization workflow
 
-. Edit model.sh to
-.. set PYTHONPATH to your Benchmarks location
-.. uncomment the anaconda3 PATH entry
+. Edit model.sh to set PYTHONPATH to your Benchmarks location
 . Edit workflow.sh to set the R variable to your R installation
 
 Then, run:
@@ -197,6 +195,8 @@ where X01 is a name you give the the experiment run.
 This will run for a long time.  Press Ctrl-C to cancel.
 
 === On Bebop
+
+Edit model.sh to uncomment the anaconda3 PATH entry
 
 Swift/T will report a job number (JOB_ID) and output directory (TURBINE_OUTPUT).  Use 'squeue -u $USER' to determine when the job starts, at which point you can start viewing output in output.txt .
 
