@@ -13,7 +13,13 @@ $ make -j 4
 $ make install
 ----
 
-and record your R installation location for use below.
+Put R in your PATH and record your R installation location for use below.
+
+=== Install the hyperparameter optimizer (mlrMBO)
+
+----
+$ Topics/5_hyperparam_opt/install-candle.sh
+----
 
 === Install EQ/R
 
