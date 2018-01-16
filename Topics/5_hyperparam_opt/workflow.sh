@@ -41,30 +41,44 @@ BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
 
 # Construct the command line given to Swift/T
 CMD_LINE_ARGS=( -pp=$MAX_CONCURRENT_EVALUATIONS
-                -it=$MAX_ITERATIONS 
-                -param_set_file=$PARAM_SET_FILE 
+                -it=$MAX_ITERATIONS
+                -param_set_file=$PARAM_SET_FILE
               )
 
-# Scheduler settings for large systems (unused for laptops)
-export QUEUE=batch
-export WALLTIME=00:10:00
-export PPN=16
-export TURBINE_JOBNAME="${EXPID}"
-# set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
-# or empty for an immediate non-queued unscheduled run
-MACHINE=""
 
 if [ -n "$MACHINE" ]
 then
   MACHINE="-m $MACHINE"
 fi
 
+# USER: Set this to 1 if on Bebop:
+# BEBOP=0
+BEBOP=1
 
-EQR=$EMEWS_PROJECT_ROOT/EQ-R
+if (( BEBOP ))
+then
+  EQR=/home/wozniak/Public/sfw/bebop/EQ-R
 
-# USER: set the R variable to your R installation
-R=$HOME/Public/sfw/R-3.4.3/lib/R
-export LD_LIBRARY_PATH=$R/lib:$R/library/Rcpp/lib:$R/library/RInside/lib
+  # Scheduler settings for large systems (unused for laptops)
+  export QUEUE=batch
+  export WALLTIME=00:10:00
+  # Processes per node
+  export PPN=1
+  # The job name in the scheduler (shows in qstat)
+  export TURBINE_JOBNAME="${EXPID}"
+  # Set MACHINE to your schedule type (e.g. pbs, slurm, cobalt etc.),
+  # or empty for an immediate non-queued unscheduled run
+  MACHINE="-m slurm"
+
+  PATH=/home/wozniak/Public/sfw/bebop/compute/swift-t-dl/stc/bin
+
+else
+  EQR=$EMEWS_PROJECT_ROOT/EQ-R
+  # USER: set the R variable to your R installation
+  R=$HOME/Public/sfw/R-3.4.3/lib/R
+  export LD_LIBRARY_PATH=$R/lib:$R/library/Rcpp/lib:$R/library/RInside/lib
+  MACHINE=""
+fi
 
 set -x
 swift-t $MACHINE -p -n $PROCS \
