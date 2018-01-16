@@ -73,8 +73,6 @@ $ make install
 
 ==== On Bebop
 
-==== On Bebop
-
 This is already installed.  Add to PATH:
 
 ----
