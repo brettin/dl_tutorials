@@ -218,6 +218,48 @@ $ ./data-shrink.sh $BENCHMARKS/Data/Pilot1
 
 Then, run the workflow again.  Training with the smaller data sets should complete in a matter of seconds on a fast system.
 
+== File index
+
+In order of execution:
+
+workflow.sh::
+The main user entry point.  Sets up the environment and arguments, invokes swift-t
+
+workflow.swift::
+The swift-t system runs this program.  swift-t starts up the MPI environment (either local mpiexec or SLURM, etc.)  Then, it runs this workflow, which starts mlrMBO via EMEWS and passes sample hyperparameters from mlrMBO to Keras, and returns results to mlrMBO
+
+EQ-R::
+Directory containing the EMEWS Queues for R installation
+
+mlrMBO3.R::
+Wrapper around mlrMBO.  Communicates with Swift/T over EMEWS.
+
+data/params.R::
+The definition of the search space to be used by mlrMBO.  In this example, we simply try varying the number of training epochs and number of neurons in the dense network
+
+model.sh::
+Invoked by Swift/T with PARAMS, a JSON-encoded hyperparameter sample.  Sets up environment and calls python on the model runner
+
+model_runner.py::
+Abstraction wrapper around the Benchmark.  Invokes the Benchmark with the given model_name
+
+Benchmarks/nt3_baseline_keras2.py::
+The actual cancer Benchmark, using Keras.  Trains the NN and returns the validation loss
+
+== Extending this example
+
+=== Modify mlrMBO settings
+
+This is simply a matter of extending params.R and handling the extra generated parameters in model.sh
+
+=== Change the neural network used
+
+This is a matter of changing model.sh .  This shell script can be modified to invoke any program, Python-based or otherwise.  Simply pass PARAMS to your NN.
+
+=== Use a different optimizer
+
+CANDLE has developed other workflows that use other optimizers (DEAP, Hyperopt, etc.)  Connect with us to try these workflows, or see https://emews.github.io to develop your own workflow!
+
 == Systems with MPICH and OpenMPI
 
 This may result in conflicts.  After installing MPICH, do:
