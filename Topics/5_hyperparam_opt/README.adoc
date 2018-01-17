@@ -15,6 +15,16 @@ For Swift/T issues, see here: http://swift-lang.github.io/swift-t/guide.html#sup
 
 == Installation
 
+The notes below include modes for
+
+* Installing from source on your machine (does not require root)
+* Running from pre-installed software on LCRC Bebop
+
+In advance of the tutorial, either:
+
+* From source: Install R and mlrMBO as shown below, as this installation takes significant compilation time
+* On Bebop: Check that your Bebop account is still working
+
 === Install R
 
 ==== From source
