@@ -237,3 +237,7 @@ and in dev/build/turbine-build.sh, set:
 ----
 EXTRA_ARGS=--with-launcher=/usr/bin/mpiexec.mpich
 ----
+
+== Acknowledgments
+
+Thanks to Jonathan Ozik and Rajeev Jain for providing feedback on this tutorial.
