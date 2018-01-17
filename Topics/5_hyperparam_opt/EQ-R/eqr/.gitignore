@@ -1,0 +1,15 @@
+autom4te.cache
+config.h.in
+config.h
+configure
+settings.sh
+settings.mk
+config.log
+config.status
+Makefile
+*.dylib
+*.so
+*.o
+*.d
+EQR_wrap.cxx
+pkgIndex.tcl

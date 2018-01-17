@@ -1,213 +1,152 @@
+
+/*
+  WORKFLOW.SWIFT
+*/
+
 import files;
 import string;
 import sys;
 import io;
 import stats;
-import python;
 import math;
 import location;
 import assert;
 import R;
 
-import EQPy;
+import EQR;
 
 string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
-int max_evals = toint(argv("max_evals", "100"));
-int param_batch_size = toint(argv("param_batch_size", "10"));
-string space_file = argv("space_description_file");
-string data_dir = argv("data_directory");
+int propose_points = toint(argv("pp", "3"));
+int max_budget = toint(argv("mb", "110"));
+int max_iterations = toint(argv("it", "5"));
+int design_size = toint(argv("ds", "10"));
+string param_set = argv("param_set_file");
+string model_name = argv("model_name");
+string exp_id = argv("exp_id");
+int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+string obj_param = argv("obj_param", "val_loss");
+string site = argv("site");
 
-string read_space_code =
-"""
-with open("%s", 'r') as space_file:
-  space = space_file.read()
-""";
+string FRAMEWORK = "keras";
 
-// this is the "model"
-string p1b1_template =
-"""
-# tensoflow.__init__ calls _os.path.basename(_sys.argv[0])
-# so we need to create a synthetic argv.
-import sys
-if not hasattr(sys, 'argv'):
-    sys.argv  = ['p1b1']
+// Call to objective function: the NN model,
+//  then get results from output file
+(string result) obj(string params, string run_id)
+{
+  string model_sh       = getenv("MODEL_SH");
+  string turbine_output = getenv("TURBINE_OUTPUT");
 
-import p1b1_baseline
-import p1b1
-
-params = %s
-test_path = '%s/P1B1.test.csv'
-train_path = '%s/P1B1.train.csv'
-X_train, X_test = p1b1.load_data(test_path=test_path, train_path=train_path)
-
-# this assumes a simple space. A more complicated space
-# will require additional unpacking. Note that hp.choice returns
-# the index into its list / tuple.
-epochs = int(params['epochs'][0])
-encoder, decoder, history = p1b1_baseline.run_p1b1(X_train, X_test, epochs=epochs)
-
-# works around this error:
-# https://github.com/tensorflow/tensorflow/issues/3388
-from keras import backend as K
-K.clear_session()
-
-# use the last validation_loss as the value to minimize
-val_loss = history.history['val_loss']
-a = val_loss[-1]
-""";
-
-// algorithm params format is a string representation
-// of a python dictionary. eqpy_hyperopt evals this
-// string to create the dictionary. This, unfortunately,
-string algo_params_template =
-"""
-{'space' : %s,
-'algo' : %s,
-'max_evals' : %d,
-'param_batch_size' : %d,
-'seed' : %d}
-""";
-
-(string parameter_combos[]) create_parameter_combinations(string params, int trials) {
-  // TODO
-  // Given the parameter string and the number of trials for that
-  // those parameters, create an array of parameter combinations
-  // Typically, this involves at least appending a different random
-  // seed to the parameter string for each trial
+  string outdir = "%s/run/%s" % (turbine_output, run_id);
+  // printf("running model shell script in: %s", outdir);
+  string result_file = outdir/"result.txt";
+  wait (run_model(model_sh, params, run_id))
+  {
+    result = get_results(result_file);
+  }
+  printf("result(%s): %s", run_id, result);
 }
 
-(string obj_result) obj(string params, int trials, string iter_indiv_id) {
-
-    // Typical code might create multiple sets of parameters from a single
-    // set by duplicating that set some number of times and appending a
-    // different random seed to each of the new sets. The example doesn't
-    // do that so we only need to run obj rather than create those new
-    // parameters and iterate over them.
-    // string parameter_combos[] = create_parameter_combinations(params, trials);
-    // float fresults[];
-    //foreach f,i in params {
-    //    string id_suffix = "%s_%i" % (iter_indiv_id,i);
-    //    fresults[i] = run_obj(f, id_suffix);
-    //}
-    // not using unique id suffix but we could use it to create
-    // a per run unique directory if we need such
-    string id_suffix = "%s_%i" % (iter_indiv_id,1);
-    string p1b1_code = p1b1_template % (params, data_dir, data_dir);
-    obj_result = python_persist(p1b1_code, "str(a)");
+// Run the Python code
+app (void o) run_model (string model_sh, string params,
+                        string run_id)
+{
+  //                  1         2      3
+  "bash" model_sh FRAMEWORK params run_id;
 }
 
-(void v) loop (location ME, int ME_rank, int trials) {
-    for (boolean b = true, int i = 1;
+// Get the results from a NN run
+(string obj_result) get_results(string result_file)
+{
+  if (file_exists(result_file))
+  {
+    file line = input(result_file);
+    obj_result = trim(read(line));
+  }
+  else
+  {
+    printf("File not found: %s", result_file);
+    obj_result = "NaN";
+  }
+}
+
+(void v) loop(location ME, int ME_rank)
+{
+  for (boolean b = true, int i = 1;
        b;
        b=c, i = i + 1)
   {
-    // gets the model parameters from the python algorithm
-    string params =  EQPy_get(ME);
+    string params =  EQR_get(ME);
     boolean c;
-    // TODO
-    // Edit the finished flag, if necessary.
-    // when the python algorithm is finished it should
-    // pass "DONE" into the queue, and then the
-    // final set of parameters. If your python algorithm
-    // passes something else then change "DONE" to that
-    if (params == "FINAL")
+
+    if (params == "DONE")
     {
-        string finals =  EQPy_get(ME);
-        printf("Final Result: %s" % finals);
-        // TODO if appropriate
-        // split finals string and join with "\\n"
-        // e.g. finals is a ";" separated string and we want each
-        // element on its own line:
-        // multi_line_finals = join(split(finals, ";"), "\\n");
-        string fname = "%s/final_result_%i" % (turbine_output, ME_rank);
-        file results_file <fname> = write(finals + "\n") =>
-        printf("Writing final result to %s", fname) =>
+      // We are done: store the final results
+      string finals =  EQR_get(ME);
+      string fname = "%s/final_res.Rds" % (turbine_output);
+      printf("See results in %s", fname) =>
         // printf("Results: %s", finals) =>
         v = make_void() =>
         c = false;
     }
+    else if (params == "EQR_ABORT")
+    {
+      printf("EQR aborted: see output for R error") =>
+        string why = EQR_get(ME);
+      printf("%s", why) =>
+        v = propagate() =>
+        c = false;
+    }
     else
     {
-
-        string param_array[] = split(params, ";");
-        string results[];
-        foreach p, j in param_array
-        {
-            printf(p);
-            results[j] = obj(p, trials, "%i_%i_%i" % (ME_rank,i,j));
-        }
-
-        string res = join(results, ",");
-        EQPy_put(ME, res) => c = true;
-
+      string param_array[] = split(params, ";");
+      string results[];
+      foreach p, j in param_array
+      {
+        results[j] = obj(p, "%000i_%0000i" % (i,j));
+      }
+      string res = join(results, ";");
+      // printf(res);
+      EQR_put(ME, res) => c = true;
     }
   }
 }
 
-// TODO
-// Edit function arguments to include those passed from main function
-// below
-(void o) start (int ME_rank, int num_variations, int random_seed) {
+// These must agree with the arguments to the objective function in mlrMBO3.R,
+// except param.set.file is removed and processed by the mlrMBO.R algorithm wrapper.
+string algo_params_template =
+"""
+param.set.file='%s',
+max.budget = %d,
+max.iterations = %d,
+design.size=%d,
+propose.points=%d
+""";
+
+(void o) start(int ME_rank) {
     location ME = locationFromRank(ME_rank);
-    // create the python dictionary representation of the
-    // parameters for the hyperopt algorithm
-    // see https://github.com/hyperopt/hyperopt/wiki/FMin#2-defining-a-search-space
-    // for more info the search space
-    // "hyperopt.hp.choice(\\'epochs\\', )";
-    string code = read_space_code % space_file;
-    string space = python(code, "space");
-    // this can also be hyperopt.tpe.suggest, but in that case
-    // we might not get much parallelism.
-    string algo = "hyperopt.rand.suggest";
 
-    string algo_params = algo_params_template % (space, algo, max_evals,
-      param_batch_size, random_seed);
-    // python raises an error if we pass a multiline string using EQPy_put
-    // so the \n are removed. algo_params_template is easier to read and edit
-    // as a multiline string so I left it like that and fixed it here.
-    string trimmed_algo_params = trim(replace_all(algo_params, "\n", " ", 0));
-
-    EQPy_init_package(ME,"eqpy_hyperopt.hyperopt_runner") =>
-    EQPy_get(ME) =>
-    EQPy_put(ME, trimmed_algo_params) =>
-      loop(ME, ME_rank, num_variations) => {
-        EQPy_stop(ME);
+    // algo_params is the string of parameters used to initialize the
+    // R algorithm. We pass these as R code: a comma separated string
+    // of variable=value assignments.
+    string algo_params = algo_params_template %
+      (param_set, max_budget, max_iterations,
+       design_size, propose_points);
+    string algorithm = emews_root/"mlrMBO3.R";
+    EQR_init_script(ME, algorithm) =>
+    EQR_get(ME) =>
+    EQR_put(ME, algo_params) =>
+    loop(ME, ME_rank) => {
+        EQR_stop(ME) =>
+        EQR_delete_R(ME);
         o = propagate();
     }
 }
 
-// deletes the specified directory
-app (void o) rm_dir(string dirname) {
-  "rm" "-rf" dirname;
-}
-
-// call this to create any required directories
-app (void o) make_dir(string dirname) {
-  "mkdir" "-p" dirname;
-}
-
-// anything that need to be done prior to a model runs
-// (e.g. file creation) can be done here
-//app (void o) run_prerequisites() {
-//
-//}
-
-
 main() {
 
-  // TODO
-  // Retrieve arguments to this script here
-  // these are typically used for initializing the python algorithm
-  // Here, as an example, we retrieve the number of variations (i.e. trials)
-  // for each model run, and the random seed for the python algorithm.
-  int num_variations = toint(argv("nv", "1"));
-  int random_seed = toint(argv("seed", "0"));
-
-  // PYTHONPATH needs to be set for python code to be run
-  assert(strlen(getenv("PYTHONPATH")) > 0, "Set PYTHONPATH!");
   assert(strlen(emews_root) > 0, "Set EMEWS_PROJECT_ROOT!");
 
   int ME_ranks[];
@@ -215,10 +154,12 @@ main() {
     ME_ranks[i] = toint(r_rank);
   }
 
-  //run_prerequisites() => {
-    foreach ME_rank, i in ME_ranks {
-      start(ME_rank, num_variations, random_seed);
-    }
-//}
-
+  foreach ME_rank, i in ME_ranks {
+    start(ME_rank) =>
+    printf("End rank: %d", ME_rank);
+  }
 }
+
+// Local Variables:
+// c-basic-offset: 2
+// End:

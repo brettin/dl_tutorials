@@ -1,20 +1,103 @@
 
+:toc:
+
 = Hyperparameter Optimization: Getting the Most Out of Your Models
 Justin M. Wozniak <wozniak@mcs.anl.gov>
 
+The notes below include modes for
+
+* installing from source on your machine (does not require root)
+* running from pre-installed software on LCRC Bebop
+
+In advance of the tutorial, either:
+
+* From source: Install R and mlrMBO as shown below, as this installation takes significant compilation time
+* On Bebop: Check that your Bebop account is still working
+
 == Installation
 
-=== Install Hyperopt
+=== Install R
+
+==== From source
 
 ----
-$ pip install hyperopt
+$ wget https://cran.r-project.org/src/base/R-3/R-3.4.3.tar.gz
+$ ./configure --prefix=$HOME/R-3.4.3 --without-ICU --enable-R-shlib
+$ make -j 4
+$ make install
+----
+
+Put R in your PATH and record your R installation location for use below.
+
+==== On Bebop
+
+Add to PATH:
+
+----
+/home/wozniak/Public/sfw/bebop/R-3.4.3/bin
+----
+
+=== Install the hyperparameter optimizer (mlrMBO)
+
+==== On Bebop
+
+This is already installed.
+
+==== From source
+
+----
+$ Topics/5_hyperparam_opt/install-candle.sh
+----
+
+This step can take under 10 minutes on a fast machine, but on a slower machine or VM, it can take up to 2 hours.
+
+=== Install EQ/R
+
+==== On Bebop
+
+Simply edit workflow.sh to change BEBOP=0 to BEBOP=1
+
+==== From source
+
+----
+$ cd EQ-R/eqr
+$ cp settings.template.sh settings.sh
+# edit settings.sh to set R_HOME, Tcl settings
+$ source settings.sh
+$ ./configure --prefix=$PWD/..
+$ make -j 2
+$ make install
 ----
 
 === Install Swift/T
 
+==== On Bebop
+
+This is already installed.  Add to PATH:
+
+----
+/soft/jdk/1.8.0_51/bin
+/home/wozniak/Public/sfw/bebop/compute/swift-t-dl/stc/bin
+----
+
+* Run 'nice swift-t' to run on the login node.
+* Run 'swift-t -m slurm' to run on the compute nodes.
+
+==== From source
+
 First, install MPICH:
 ----
 $ sudo apt-get install mpich
+----
+
+Or install from source:
+
+----
+$ wget http://www.mpich.org/static/downloads/3.2.1/mpich-3.2.1.tar.gz
+$ tar xfz mpich-3.2.1.tar.gz
+$ ./configure --prefix=...
+$ make -j 4
+$ make install
 ----
 
 Install Swift/T using the release package here:
@@ -31,9 +114,8 @@ $ dev/build/init-settings.sh
 
 Then, edit dev/build/swift-t-settings.sh .
 . Set SWIFT_T_PREFIX to any desired installation location
-. Either
-.. Uncomment ENABLE_PYTHON=1 and ensure the correct python executable is in PATH, or
-.. Set PYTHON_EXE to your Anaconda Python executable (typically $HOME/anaconda3/bin/python)
+. Set ENABLE_R=1
+. Set R_INSTALL to your R installation
 
 Then:
 
@@ -44,6 +126,8 @@ $ dev/build/build-all.sh
 If the build is successful, you will see a final message BUILD SUCCESSFUL from Ant.
 
 Then, add the reported stc/bin directory to your PATH.  This contains the executable program *swift-t* .
+
+==== Test Swift/T
 
 You can test the Swift/T installation by running:
 
@@ -56,24 +140,73 @@ trace: 42
 
 This is a cancer benchmark.
 
+=== Get the source code
+
 ----
 $ git clone https://github.com/ECP-CANDLE/Benchmarks.git
 $ cd Benchmarks
-$ cd Pilot1/P1B3
-# Check you are using the right python executable, then:
-$ python p1b3_baseline_keras2.py
+$ git checkout frameworks
 ----
 
-This will download a bunch of data, then start running Keras/TensorFlow.
+Note where the Benchmarks are installed
+
+----
+BENCHMARKS=$PWD/Benchmarks
+----
+
+== Test the benchmark
+
+Run this to test the benchmark by itself (no hyperparameter search), and look for the given output.
+
+----
+$ cd $BENCHMARKS/Pilot1/NT3
+# Check you are using the right python executable, then:
+$ nice python nt3_baseline_keras2.py
+Using TensorFlow backend.
+...
+Params: { ...
+----
+
+=== On Bebop
+
+Add this Anaconda installation to your PATH:
+
+----
+/home/wozniak/Public/sfw/anaconda3/bin
+----
+
+Run the python command above on the login node (under nice!) until the data has been downloaded, then kill it when TensorFlow starts (Ctrl-C).  Then, submit to the compute as shown below.
 
 == Run the optimization workflow
 
+. Edit model.sh to set PYTHONPATH to your Benchmarks location
+. Edit workflow.sh to set the R variable to your R installation
+
+Then, run:
+
 ----
-$ cd Topics/5_hyperparam_opt
 $ ./workflow.sh X01
 ----
 
+where X01 is a name you give the the experiment run.
 
+This will run for a long time.  Press Ctrl-C to cancel.
+
+=== On Bebop
+
+Edit model.sh to uncomment the anaconda3 PATH entry
+
+Swift/T will report a job number (JOB_ID) and output directory (TURBINE_OUTPUT).  Use 'squeue -u $USER' to determine when the job starts, at which point you can start viewing output in output.txt .
+
+=== Shrink the data
+
+This script will back up your original data and create smaller data files.
+
+----
+$ ./data-shrink.sh $BENCHMARKS/Data/Pilot1
+----
+
+Then, run the workflow again.  Training with the smaller data sets should complete in a matter of seconds on a fast system.
 
 == Systems with MPICH and OpenMPI
 
