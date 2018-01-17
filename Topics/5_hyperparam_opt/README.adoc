@@ -4,15 +4,14 @@
 = Hyperparameter Optimization: Getting the Most Out of Your Models
 Justin M. Wozniak <wozniak@mcs.anl.gov>
 
-The notes below include modes for
+== Support
 
-* installing from source on your machine (does not require root)
-* running from pre-installed software on LCRC Bebop
+If there are any questions or issues with these instructions, either:
 
-In advance of the tutorial, either:
+. File an issue at https://github.com/brettin/dl_tutorials/issues
+. Email wozniak@mcs.anl.gov
 
-* From source: Install R and mlrMBO as shown below, as this installation takes significant compilation time
-* On Bebop: Check that your Bebop account is still working
+For Swift/T issues, see here: http://swift-lang.github.io/swift-t/guide.html#support
 
 == Installation
 
