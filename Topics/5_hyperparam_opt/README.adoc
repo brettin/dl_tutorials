@@ -4,6 +4,14 @@
 = Hyperparameter Optimization: Getting the Most Out of Your Models
 Justin M. Wozniak <wozniak@mcs.anl.gov>
 
+== Overview
+
+In this example:
+
+* We are going to run a real CANDLE cancer Keras Benchmark.
+* We are going to optimize two of its hyperparameters (epochs and dense layer size) using Model-Based Optimization in R (mlrMBO)
+* We are going to run on a local machine or the LCRC Bebop cluster
+
 == Support
 
 If there are any questions or issues with these instructions, either:
