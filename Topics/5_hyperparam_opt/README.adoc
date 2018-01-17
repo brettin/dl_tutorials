@@ -64,6 +64,7 @@ $ cd EQ-R/eqr
 $ cp settings.template.sh settings.sh
 # edit settings.sh to set R_HOME, Tcl settings
 $ source settings.sh
+$ ./bootstrap
 $ ./configure --prefix=$PWD/..
 $ make -j 2
 $ make install
