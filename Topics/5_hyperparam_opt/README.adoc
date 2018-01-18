@@ -21,6 +21,8 @@ If there are any questions or issues with these instructions, either:
 
 For Swift/T issues, see here: http://swift-lang.github.io/swift-t/guide.html#support
 
+For EMEWS issues, see here: http://emews.github.io/support.html
+
 == Installation
 
 The notes below include modes for
